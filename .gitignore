@@ -1,0 +1,14 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/node
+.mvn/etc
+
+### STS ###
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+build/
+dist/
