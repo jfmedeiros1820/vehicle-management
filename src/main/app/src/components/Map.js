@@ -1,59 +1,55 @@
 import _ from "lodash";
-
 import React from "react";
+import withScriptjs from "react-google-maps/lib/async/withScriptjs";
 
 import {
   withGoogleMap,
   GoogleMap,
   Marker,
-} from "react-google-maps";
+} from "react-google-maps/lib";
 
-/*
- * This is the modify version of:
- * https://developers.google.com/maps/documentation/javascript/examples/event-arguments
- *
- * Add <script src="https://maps.googleapis.com/maps/api/js"></script> to your HTML to provide google.maps reference
- */
-    const GettingStartedGoogleMap = withGoogleMap(props => (
+const AsyncGoogleMap = _.flowRight(
+  withScriptjs,
+  withGoogleMap,
+)(props => (
     <GoogleMap
         ref={props.onMapLoad}
-        defaultZoom={3}
-        defaultCenter={{ lat: -25.363882, lng: 131.044922 }}
-        onClick={props.onMapClick}>
-
+        defaultZoom={5}
+        defaultCenter={{ lat: -18.14584922288026, lng: -44.47265625 }}
+        onClick={props.onMapClick}
+    >
         {props.markers.map(marker => (
-        <Marker
-            {...marker}
-            onRightClick={() => props.onMarkerRightClick(marker)}
-        />
+            <Marker
+                {...marker}
+                onRightClick={() => props.onMarkerRightClick(marker)}
+            />
         ))}
     </GoogleMap>
-    ));
+));
 
 export default class Map extends React.Component {
 
     constructor(){
-        super();
+        super()
         this.handleMapLoad = this.handleMapLoad.bind(this);
         this.handleMapClick = this.handleMapClick.bind(this);
         this.handleMarkerRightClick = this.handleMarkerRightClick.bind(this);
         this.state = {
             markers: [{
                 position: {
-                    lat: 25.0112183,
-                    lng: 121.52067570000001,
+                    lat: -18.14584922288026,
+                    lng: -44.47265625,
                 },
-                key: `Taiwan`,
+                key: 'Brazil',
                 defaultAnimation: 2,
             }],
-        };
+        }
     }
-
 
     handleMapLoad(map) {
         this._mapComponent = map;
         if (map) {
-            console.log(map.getZoom());
+            map.getZoom()
         }
     }
 
@@ -65,26 +61,20 @@ export default class Map extends React.Component {
         const nextMarkers = [
             ...this.state.markers,
             {
-            position: event.latLng,
-            defaultAnimation: 2,
-            key: Date.now(), // Add a key property for: http://fb.me/react-warning-keys
+                position: {
+                    lat: event.latLng.lat(),
+                    lng: event.latLng.lng(),
+                },
+                defaultAnimation: 2,
+                key: Date.now(),
             },
         ];
         this.setState({
             markers: nextMarkers,
         });
-
-        if (nextMarkers.length === 3) {
-            this.props.toast(`Right click on the marker to remove it`,`Also check the code!`);
-        }
     }
 
     handleMarkerRightClick(targetMarker) {
-        /*
-        * All you modify is data, and the view is driven by data.
-        * This is so called data-driven-development. (And yes, it's now in
-        * web front end and even with google maps API.)
-        */
         const nextMarkers = this.state.markers.filter(marker => marker !== targetMarker);
         this.setState({
             markers: nextMarkers,
@@ -93,10 +83,21 @@ export default class Map extends React.Component {
 
     render() {
         return (
-            <div style={{height: `100%`}}>
-            <GettingStartedGoogleMap
+            <AsyncGoogleMap
+                googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyCOOgFVb9s4w_cRWEhoAUKFE8n6zwIelPI"
+                loadingElement={
+                <div style={{ height: `100%` }}>
+                    
+                </div>
+                }
                 containerElement={
-                <div style={{ height: `100%` }} />
+                <div style={{ position: 'absolute',
+                                top: 200,
+                                left: 150,
+                                right: 150,
+                                bottom: 200,
+                                justifyContent: 'flex-end',
+                                alignItems: 'center',}} />
                 }
                 mapElement={
                 <div style={{ height: `100%` }} />
@@ -106,7 +107,6 @@ export default class Map extends React.Component {
                 markers={this.state.markers}
                 onMarkerRightClick={this.handleMarkerRightClick}
             />
-            </div>
         );
     }
 }
